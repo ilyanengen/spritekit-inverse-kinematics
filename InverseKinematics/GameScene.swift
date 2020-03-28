@@ -19,6 +19,9 @@ class GameScene: SKScene {
     
     var fistFront: SKNode!
     
+    let upperArmAngleDeg: CGFloat = -10
+    let lowerArmAngleDeg: CGFloat = 130
+    
     override func didMove(to view: SKView) {
         
         lowerTorso = childNode(withName: "torso_lower")
@@ -37,11 +40,17 @@ class GameScene: SKScene {
     func punchAt(_ location: CGPoint) {
         
         let punch = SKAction.reach(to: location, rootNode: upperArmFront, duration: 0.1)
+    
+        let restore = SKAction.run {
+            
+            self.upperArmFront.run(SKAction.rotate(toAngle: self.upperArmAngleDeg.degreesToRadians(), duration: 0.1))
+            self.lowerArmFront.run(SKAction.rotate(toAngle: self.lowerArmAngleDeg.degreesToRadians(), duration: 0.1))
+        }
         
-        fistFront.run(punch)
+        // Делаем удар с возвратом
+        fistFront.run(SKAction.sequence([punch, restore]))
     }
      
-    // 3
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
         for touch: AnyObject in touches {
