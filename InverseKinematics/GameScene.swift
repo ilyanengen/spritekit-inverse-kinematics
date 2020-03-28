@@ -13,6 +13,11 @@ class GameScene: SKScene {
     
     var shadow: SKNode!
     var lowerTorso: SKNode!
+    var upperTorso: SKNode!
+    var upperArmFront: SKNode!
+    var lowerArmFront: SKNode!
+    
+    var fistFront: SKNode!
     
     override func didMove(to view: SKView) {
         
@@ -21,6 +26,30 @@ class GameScene: SKScene {
         
         shadow  = childNode(withName: "shadow")
         shadow.position = CGPoint(x: frame.midX, y: frame.midY - 100)
+        
+        upperTorso = lowerTorso.childNode(withName: "torso_upper")
+        upperArmFront = upperTorso.childNode(withName: "arm_upper_front")
+        lowerArmFront = upperArmFront.childNode(withName: "arm_lower_front")
+        
+        fistFront = lowerArmFront.childNode(withName: "fist_front")
+    }
+    
+    func punchAt(_ location: CGPoint) {
+        
+        let punch = SKAction.reach(to: location, rootNode: upperArmFront, duration: 0.1)
+        
+        fistFront.run(punch)
+    }
+     
+    // 3
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
+        for touch: AnyObject in touches {
+            
+            let location = touch.location(in: self)
+            
+            punchAt(location)
+        }
     }
     
     /*
