@@ -12,15 +12,22 @@ import GameplayKit
 class GameScene: SKScene {
     
     var shadow: SKNode!
+
     var lowerTorso: SKNode!
     var upperTorso: SKNode!
+
     var upperArmFront: SKNode!
     var lowerArmFront: SKNode!
-    
     var fistFront: SKNode!
+    
+    var upperArmBack: SKNode!
+    var lowerArmBack: SKNode!
+    var fistBack: SKNode!
     
     let upperArmAngleDeg: CGFloat = -10
     let lowerArmAngleDeg: CGFloat = 130
+    
+    var isRightPunch: Bool = true
     
     override func didMove(to view: SKView) {
         
@@ -31,25 +38,44 @@ class GameScene: SKScene {
         shadow.position = CGPoint(x: frame.midX, y: frame.midY - 100)
         
         upperTorso = lowerTorso.childNode(withName: "torso_upper")
+        
         upperArmFront = upperTorso.childNode(withName: "arm_upper_front")
         lowerArmFront = upperArmFront.childNode(withName: "arm_lower_front")
-        
         fistFront = lowerArmFront.childNode(withName: "fist_front")
+        
+        upperArmBack = upperTorso.childNode(withName: "arm_upper_back")
+        lowerArmBack = upperArmBack.childNode(withName: "arm_lower_back")
+        fistBack = lowerArmBack.childNode(withName: "fist_back")
+    }
+    
+    func punchAt(_ location: CGPoint, upperArmNode: SKNode, lowerArmNode: SKNode, fistNode: SKNode) {
+        
+        let punch = SKAction.reach(to: location, rootNode: upperArmNode, duration: 0.1)
+        
+        let restore = SKAction.run {
+            
+            upperArmNode.run(SKAction.rotate(toAngle: self.upperArmAngleDeg.degreesToRadians(), duration: 0.1))
+            lowerArmNode.run(SKAction.rotate(toAngle: self.lowerArmAngleDeg.degreesToRadians(), duration: 0.1))
+        }
+        
+        fistNode.run(SKAction.sequence([punch, restore]))
     }
     
     func punchAt(_ location: CGPoint) {
         
-        let punch = SKAction.reach(to: location, rootNode: upperArmFront, duration: 0.1)
-    
-        let restore = SKAction.run {
+        if isRightPunch {
             
-            self.upperArmFront.run(SKAction.rotate(toAngle: self.upperArmAngleDeg.degreesToRadians(), duration: 0.1))
-            self.lowerArmFront.run(SKAction.rotate(toAngle: self.lowerArmAngleDeg.degreesToRadians(), duration: 0.1))
-        }
+            punchAt(location, upperArmNode: upperArmFront, lowerArmNode: lowerArmFront, fistNode: fistFront)
         
-        // Делаем удар с возвратом
-        fistFront.run(SKAction.sequence([punch, restore]))
+        } else {
+            
+            punchAt(location, upperArmNode: upperArmBack, lowerArmNode: lowerArmBack, fistNode: fistBack)
+        }
+    
+        isRightPunch = !isRightPunch
     }
+    
+    
      
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
