@@ -11,9 +11,16 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    var shadow: SKNode!
+    var lowerTorso: SKNode!
+    
     override func didMove(to view: SKView) {
         
+        lowerTorso = childNode(withName: "torso_lower")
+        lowerTorso.position = CGPoint(x: frame.midX, y: frame.midY - 30)
         
+        shadow  = childNode(withName: "shadow")
+        shadow.position = CGPoint(x: frame.midX, y: frame.midY - 100)
     }
     
     /*
