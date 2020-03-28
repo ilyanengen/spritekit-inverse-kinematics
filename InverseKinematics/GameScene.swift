@@ -29,6 +29,11 @@ class GameScene: SKScene {
     
     var isRightPunch: Bool = true
     
+    // Head tracking
+    var head: SKNode!
+    let targetNode = SKNode()
+    var firstTouch = false
+    
     override func didMove(to view: SKView) {
         
         lowerTorso = childNode(withName: "torso_lower")
@@ -46,6 +51,18 @@ class GameScene: SKScene {
         upperArmBack = upperTorso.childNode(withName: "arm_upper_back")
         lowerArmBack = upperArmBack.childNode(withName: "arm_lower_back")
         fistBack = lowerArmBack.childNode(withName: "fist_back")
+        
+        // Head tracking
+        head = upperTorso.childNode(withName: "head")
+        
+        let orientToNodeConstraint = SKConstraint.orient(to: targetNode, offset: SKRange(constantValue: 0.0))
+        let range = SKRange(lowerLimit: CGFloat(-50).degreesToRadians(), upperLimit: CGFloat(80).degreesToRadians())
+        let rotationConstraint = SKConstraint.zRotation(range)
+        
+        rotationConstraint.enabled = false
+        orientToNodeConstraint.enabled = false
+        
+        head.constraints = [orientToNodeConstraint, rotationConstraint]
     }
     
     func punchAt(_ location: CGPoint, upperArmNode: SKNode, lowerArmNode: SKNode, fistNode: SKNode) {
@@ -75,15 +92,32 @@ class GameScene: SKScene {
         isRightPunch = !isRightPunch
     }
     
-    
-     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         
+        // Head tracking
+        if firstTouch == false {
+            
+            for c in head.constraints! {
+                
+                let constraint = c
+                constraint.enabled = true
+            }
+            
+            firstTouch = true
+        }
+        
+        // Touches
         for touch: AnyObject in touches {
             
             let location = touch.location(in: self)
             
+            // Повернуть всё тело в зависимости от тапа
+            lowerTorso.xScale = location.x < frame.midX ? abs(lowerTorso.xScale) * -1 : abs(lowerTorso.xScale)
+            
             punchAt(location)
+            
+            // For head tracking. targetNode now stores the location of the latest tap location.
+            targetNode.position = location
         }
     }
     
