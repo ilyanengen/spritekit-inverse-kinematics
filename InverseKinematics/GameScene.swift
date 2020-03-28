@@ -11,12 +11,22 @@ import GameplayKit
 
 class GameScene: SKScene {
     
+    override func didMove(to view: SKView) {
+        
+        
+    }
+    
+    /*
+     
+     Basic project setup. May be useful
+    
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
     
     private var lastUpdateTime : TimeInterval = 0
     private var label : SKLabelNode?
     private var spinnyNode : SKShapeNode?
+    
     
     override func sceneDidLoad() {
 
@@ -107,4 +117,6 @@ class GameScene: SKScene {
         
         self.lastUpdateTime = currentTime
     }
+    
+    */
 }
