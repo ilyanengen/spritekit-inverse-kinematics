@@ -16,23 +16,19 @@ class GameScene: SKScene {
     var lowerTorso: SKNode!
     var upperTorso: SKNode!
 
-    var upperArmFront: SKNode!
-    var lowerArmFront: SKNode!
-    var fistFront: SKNode!
+    var leftUpperArm: SKNode!
+    var leftLowerArm: SKNode!
+    var leftFist: SKNode!
     
-    var upperArmBack: SKNode!
-    var lowerArmBack: SKNode!
-    var fistBack: SKNode!
+    var rightUpperArm: SKNode!
+    var rightLowerArm: SKNode!
+    var rightBack: SKNode!
     
-    let upperArmAngleDeg: CGFloat = -10
-    let lowerArmAngleDeg: CGFloat = 130
-    
-    var isRightPunch: Bool = true
-    
-    // Head tracking
-    var head: SKNode!
-    let targetNode = SKNode()
-    var firstTouch = false
+    // Default rotation positions
+    let rightUpperArmAngleDeg: CGFloat = 22
+    let rightLowerArmAngleDeg: CGFloat = 101
+    let leftUpperArmAngleDeg: CGFloat = -22
+    let leftLowerArmAngleDeg: CGFloat = -101
     
     override func didMove(to view: SKView) {
         
@@ -44,80 +40,61 @@ class GameScene: SKScene {
         
         upperTorso = lowerTorso.childNode(withName: "torso_upper")
         
-        upperArmFront = upperTorso.childNode(withName: "arm_upper_front")
-        lowerArmFront = upperArmFront.childNode(withName: "arm_lower_front")
-        fistFront = lowerArmFront.childNode(withName: "fist_front")
+        leftUpperArm = upperTorso.childNode(withName: "arm_upper_front")
+        leftLowerArm = leftUpperArm.childNode(withName: "arm_lower_front")
+        leftFist = leftLowerArm.childNode(withName: "fist_front")
         
-        upperArmBack = upperTorso.childNode(withName: "arm_upper_back")
-        lowerArmBack = upperArmBack.childNode(withName: "arm_lower_back")
-        fistBack = lowerArmBack.childNode(withName: "fist_back")
-        
-        // Head tracking
-        head = upperTorso.childNode(withName: "head")
-        
-        let orientToNodeConstraint = SKConstraint.orient(to: targetNode, offset: SKRange(constantValue: 0.0))
-        let range = SKRange(lowerLimit: CGFloat(-50).degreesToRadians(), upperLimit: CGFloat(80).degreesToRadians())
-        let rotationConstraint = SKConstraint.zRotation(range)
-        
-        rotationConstraint.enabled = false
-        orientToNodeConstraint.enabled = false
-        
-        head.constraints = [orientToNodeConstraint, rotationConstraint]
+        rightUpperArm = upperTorso.childNode(withName: "arm_upper_back")
+        rightLowerArm = rightUpperArm.childNode(withName: "arm_lower_back")
+        rightBack = rightLowerArm.childNode(withName: "fist_back")
     }
     
-    func punchAt(_ location: CGPoint, upperArmNode: SKNode, lowerArmNode: SKNode, fistNode: SKNode) {
+    func rightPunchAt(_ location: CGPoint) {
         
-        let punch = SKAction.reach(to: location, rootNode: upperArmNode, duration: 0.1)
+        let punch = SKAction.reach(to: location, rootNode: rightUpperArm, duration: 0.1)
+        
+        let restore = SKAction.run {
+
+            self.rightUpperArm.run(SKAction.rotate(toAngle: self.rightUpperArmAngleDeg.degreesToRadians(), duration: 0.3))
+            self.rightLowerArm.run(SKAction.rotate(toAngle: self.rightLowerArmAngleDeg.degreesToRadians(), duration: 0.3))
+        }
+
+        rightBack.run(SKAction.sequence([punch, restore]))
+    }
+    
+    func leftPunchAt(_ location: CGPoint) {
+        
+        let punch = SKAction.reach(to: location, rootNode: leftUpperArm, duration: 0.1)
         
         let restore = SKAction.run {
             
-            upperArmNode.run(SKAction.rotate(toAngle: self.upperArmAngleDeg.degreesToRadians(), duration: 0.1))
-            lowerArmNode.run(SKAction.rotate(toAngle: self.lowerArmAngleDeg.degreesToRadians(), duration: 0.1))
+            self.leftUpperArm.run(SKAction.rotate(toAngle: self.leftUpperArmAngleDeg.degreesToRadians(), duration: 0.3))
+            self.leftLowerArm.run(SKAction.rotate(toAngle: self.leftLowerArmAngleDeg.degreesToRadians(), duration: 0.3))
         }
         
-        fistNode.run(SKAction.sequence([punch, restore]))
+        leftFist.run(SKAction.sequence([punch, restore]))
     }
     
     func punchAt(_ location: CGPoint) {
         
-        if isRightPunch {
+        if location.x > lowerTorso.position.x {
             
-            punchAt(location, upperArmNode: upperArmFront, lowerArmNode: lowerArmFront, fistNode: fistFront)
-        
+            rightPunchAt(location)
+            
         } else {
             
-            punchAt(location, upperArmNode: upperArmBack, lowerArmNode: lowerArmBack, fistNode: fistBack)
+            leftPunchAt(location)
         }
-    
-        isRightPunch = !isRightPunch
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        // Head tracking
-        if firstTouch == false {
-            
-            for c in head.constraints! {
-                
-                let constraint = c
-                constraint.enabled = true
-            }
-            
-            firstTouch = true
-        }
         
         // Touches
         for touch: AnyObject in touches {
             
             let location = touch.location(in: self)
             
-            // Повернуть всё тело в зависимости от тапа
-            lowerTorso.xScale = location.x < frame.midX ? abs(lowerTorso.xScale) * -1 : abs(lowerTorso.xScale)
-            
             punchAt(location)
-            
-            // For head tracking. targetNode now stores the location of the latest tap location.
-            targetNode.position = location
         }
     }
     
