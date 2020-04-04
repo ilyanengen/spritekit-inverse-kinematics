@@ -5,6 +5,8 @@
 //  Created by Ilya B Macmini on 28/03/2020.
 //  Copyright © 2020 ilyabiltuev. All rights reserved.
 //
+// About Inverse Kinematics:
+// https://developer.apple.com/documentation/spritekit/working_with_inverse_kinematics
 
 import SpriteKit
 import GameplayKit
