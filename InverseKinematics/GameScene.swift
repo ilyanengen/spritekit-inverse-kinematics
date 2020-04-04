@@ -12,10 +12,10 @@ import GameplayKit
 class GameScene: SKScene {
     
     var shadow: SKNode!
-
+    
     var lowerTorso: SKNode!
     var upperTorso: SKNode!
-
+    
     var leftUpperArm: SKNode!
     var leftLowerArm: SKNode!
     var leftFist: SKNode!
@@ -23,12 +23,6 @@ class GameScene: SKScene {
     var rightUpperArm: SKNode!
     var rightLowerArm: SKNode!
     var rightBack: SKNode!
-    
-    // Default rotation positions
-    let rightUpperArmAngleDeg: CGFloat = 22
-    let rightLowerArmAngleDeg: CGFloat = 101
-    let leftUpperArmAngleDeg: CGFloat = -22
-    let leftLowerArmAngleDeg: CGFloat = -101
     
     override func didMove(to view: SKView) {
         
@@ -53,26 +47,14 @@ class GameScene: SKScene {
         
         let punch = SKAction.reach(to: location, rootNode: rightUpperArm, duration: 0.1)
         
-        let restore = SKAction.run {
-
-            self.rightUpperArm.run(SKAction.rotate(toAngle: self.rightUpperArmAngleDeg.degreesToRadians(), duration: 0.3))
-            self.rightLowerArm.run(SKAction.rotate(toAngle: self.rightLowerArmAngleDeg.degreesToRadians(), duration: 0.3))
-        }
-
-        rightBack.run(SKAction.sequence([punch, restore]))
+        rightBack.run(punch)
     }
     
     func leftPunchAt(_ location: CGPoint) {
         
         let punch = SKAction.reach(to: location, rootNode: leftUpperArm, duration: 0.1)
         
-        let restore = SKAction.run {
-            
-            self.leftUpperArm.run(SKAction.rotate(toAngle: self.leftUpperArmAngleDeg.degreesToRadians(), duration: 0.3))
-            self.leftLowerArm.run(SKAction.rotate(toAngle: self.leftLowerArmAngleDeg.degreesToRadians(), duration: 0.3))
-        }
-        
-        leftFist.run(SKAction.sequence([punch, restore]))
+        leftFist.run(punch)
     }
     
     func punchAt(_ location: CGPoint) {
@@ -87,15 +69,18 @@ class GameScene: SKScene {
         }
     }
     
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        // Touches
-        for touch: AnyObject in touches {
+        for touch in touches {
             
-            let location = touch.location(in: self)
-            
-            punchAt(location)
+            self.touchMoved(toPoint: touch.location(in: self))
         }
+    }
+    
+    func touchMoved(toPoint pos : CGPoint) {
+        
+        punchAt(pos)
     }
     
     /*
