@@ -16,7 +16,7 @@ class GameViewController: UIViewController {
         
         super.viewDidLoad()
         
-        if let scene = GameScene(fileNamed: "GameScene") {
+        if let scene = GameScene(fileNamed: "BoxerGameScene") {
             
             scene.scaleMode = .aspectFit
             

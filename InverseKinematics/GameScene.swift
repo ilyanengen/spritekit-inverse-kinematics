@@ -13,8 +13,6 @@ import GameplayKit
 
 class GameScene: SKScene {
     
-    var shadow: SKNode!
-    
     var lowerTorso: SKNode!
     var upperTorso: SKNode!
     
@@ -28,21 +26,18 @@ class GameScene: SKScene {
     
     override func didMove(to view: SKView) {
         
-        lowerTorso = childNode(withName: "torso_lower")
+        lowerTorso = childNode(withName: "lower-body")
         lowerTorso.position = CGPoint(x: frame.midX, y: frame.midY - 30)
         
-        shadow  = childNode(withName: "shadow")
-        shadow.position = CGPoint(x: frame.midX, y: frame.midY - 100)
+        upperTorso = lowerTorso.childNode(withName: "upper-body")
         
-        upperTorso = lowerTorso.childNode(withName: "torso_upper")
+        leftUpperArm = upperTorso.childNode(withName: "left-arm-up")
+        leftLowerArm = leftUpperArm.childNode(withName: "left-arm-low")
+        leftFist = leftLowerArm.childNode(withName: "left-glove")
         
-        leftUpperArm = upperTorso.childNode(withName: "arm_upper_front")
-        leftLowerArm = leftUpperArm.childNode(withName: "arm_lower_front")
-        leftFist = leftLowerArm.childNode(withName: "fist_front")
-        
-        rightUpperArm = upperTorso.childNode(withName: "arm_upper_back")
-        rightLowerArm = rightUpperArm.childNode(withName: "arm_lower_back")
-        rightBack = rightLowerArm.childNode(withName: "fist_back")
+        rightUpperArm = upperTorso.childNode(withName: "right-arm-up")
+        rightLowerArm = rightUpperArm.childNode(withName: "right-arm-low")
+        rightBack = rightLowerArm.childNode(withName: "right-glove")
     }
     
     func rightPunchAt(_ location: CGPoint) {
